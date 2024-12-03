@@ -2,8 +2,8 @@ const fs = require("fs");
 const data = fs.readFileSync("day1data.txt", "utf8");
 const lines = data.split("\n");
 
-const column1 = [];
-const column2 = [];
+let column1 = [];
+let column2 = [];
 
 lines.forEach((line) => {
   const [col1, col2] = line.split("   ").map(Number);
@@ -40,3 +40,27 @@ function findTotal(diffResult) {
   console.log("TOTAL: ", sumTotal);
 }
 findTotal(diffResult);
+
+function findSimilarNums(column1, column2) {
+  let countBox = {};
+
+  for (let num of column2) {
+    if (countBox[num]) {
+      countBox[num]++;
+    } else {
+      countBox[num] = 1;
+    }
+  }
+
+  let similarityScore = 0;
+
+  for (let num of column1) {
+    if (countBox[num]) {
+      similarityScore += num * countBox[num];
+    }
+  }
+
+  return similarityScore;
+}
+
+console.log(findSimilarNums(column1, column2));
