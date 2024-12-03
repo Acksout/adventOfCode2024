@@ -24,41 +24,66 @@ const nestedArray = data
   .trim()
   .split("\n")
   .map((line) => line.split(" ").map(Number));
-// console.log(nestedArray);
 
 let safeArr = [];
+let unSafeArr = [];
+
+function isSafe(arr) {
+  const isIncreasing = arr[1] > arr[0];
+  const isDecreasing = arr[1] < arr[0];
+
+  for (let j = 0; j < arr.length - 1; j++) {
+    const currNum = arr[j];
+    const nextNum = arr[j + 1];
+    const diff = nextNum - currNum;
+
+    if (Math.abs(diff) < 1 || Math.abs(diff) > 3) {
+      return false;
+    }
+
+    if (isIncreasing && nextNum <= currNum) {
+      return false;
+    }
+    if (isDecreasing && nextNum >= currNum) {
+      return false;
+    }
+  }
+  return true;
+}
 
 function compareNum(nestedArray) {
   for (let i = 0; i < nestedArray.length; i++) {
     let currArr = nestedArray[i];
-    let isSafe = true;
-    const isIncreasing = currArr[1] > currArr[0];
-    const isDecreasing = currArr[1] < currArr[0];
-
-    for (let j = 0; j < currArr.length - 1; j++) {
-      let currNum = currArr[j];
-      let nextNum = currArr[j + 1];
-      const diff = nextNum - currNum;
-      if (Math.abs(diff) < 1 || Math.abs(diff) > 3) {
-        isSafe = false;
-        break;
-      }
-
-      if (isIncreasing && nextNum <= currNum) {
-        isSafe = false;
-        break;
-      }
-      if (isDecreasing && nextNum >= currNum) {
-        isSafe = false;
-        break;
-      }
-    }
-
-    if (isSafe) {
+    if (isSafe(currArr)) {
       safeArr.push(currArr);
+    } else {
+      unSafeArr.push(currArr);
     }
   }
 
-  console.log(safeArr.length);
+  function skipOneBadLvl(unSafeArr) {
+    for (let i = 0; i < unSafeArr.length; i++) {
+      let arr = unSafeArr[i];
+      for (let j = 0; j < arr.length; j++) {
+        let modifiedArr = arr.slice(0, j).concat(arr.slice(j + 1));
+        if (isSafe(modifiedArr)) {
+          safeArr.push(arr);
+          console.log(
+            `Skipping level ${j + 1} in sequence ${i + 1} makes it safe.`
+          );
+          break;
+        }
+      }
+    }
+  }
+
+  console.log(`Initial safe reports: ${safeArr.length}`);
+  console.log(`Initial unsafe reports: ${unSafeArr.length}`);
+
+  skipOneBadLvl(unSafeArr);
+
+  console.log(`Final safe reports: ${safeArr.length}`);
+  console.log(`Final unsafe reports: ${unSafeArr.length}`);
 }
+
 compareNum(nestedArray);
